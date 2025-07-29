@@ -66,7 +66,7 @@ function App() {
     clearSelection,
     createCustomGate,
     getCustomGates,
-    deleteCustomGate, // Import the new deleteCustomGate function
+    deleteCustomGate, 
     updateGate 
   } = useCircuit();
   const [selectedBackend, setSelectedBackend] = useState<Backend>('local');
@@ -88,6 +88,8 @@ function App() {
   const [qpuToConfigure, setQpuToConfigure] = useState<{ provider: string; backendName: string } | null>(null);
   // State for angle input modal
   const [showAngleInputModal, setShowAngleInputModal] = useState<QuantumGate | null>(null);
+  // New state for chatbot modal
+  const [showChatbotModal, setShowChatbotModal] = useState(false);
 
 
   useEffect(() => {
@@ -300,7 +302,14 @@ const handleSimulate = async () => {
 
 
   const toggleBottomPanel = (panel: 'chat' | 'suggest' | 'fix') => {
-    setActiveBottomPanel(activeBottomPanel === panel ? 'none' : panel);
+    // If opening chat, show chatbot modal instead of bottom panel
+    if (panel === 'chat') {
+      setShowChatbotModal(true);
+      setActiveBottomPanel('none'); // Ensure bottom panel is closed
+    } else {
+      setActiveBottomPanel(activeBottomPanel === panel ? 'none' : panel);
+      setShowChatbotModal(false); // Ensure chatbot modal is closed if opening other panels
+    }
   };
 
   // New handler for transpiler panel
@@ -411,7 +420,7 @@ const handleSimulate = async () => {
                 onGateSelect={handleGateAddedToCanvas} 
                 onApplyAlgorithm={handleAlgorithmSelect} 
                 onCustomGateSelect={handleCustomGateSelect}
-                onDeleteCustomGate={handleDeleteCustomGate} // Pass the new delete handler
+                onDeleteCustomGate={handleDeleteCustomGate} 
                 customGates={customGates}
                 className="h-full"
               />
@@ -448,15 +457,9 @@ const handleSimulate = async () => {
                 </div>
               </div>
               
-              {/* Bottom AI Panels */}
+              {/* Bottom AI Panels (Suggestor and Fixer remain here) */}
               {activeBottomPanel !== 'none' && (
                 <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" style={{ height: '250px' }}>
-                  {activeBottomPanel === 'chat' && (
-                    <QuantumChatbot 
-                      circuit={circuit}
-                      onClose={() => setActiveBottomPanel('none')}
-                    />
-                  )}
                   {activeBottomPanel === 'suggest' && (
                     <GateSuggestor 
                       circuit={circuit}
@@ -541,6 +544,17 @@ const handleSimulate = async () => {
           onSave={handleAngleUpdate}
           onClose={() => setShowAngleInputModal(null)}
         />
+      )}
+
+      {/* Quantum Chatbot Modal (New full-screen UI) */}
+      {showChatbotModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <QuantumChatbot 
+            onClose={() => setShowChatbotModal(false)}
+            // Circuit prop is removed as it's not directly used by the chatbot itself
+            // If context is needed, it should be passed within the message payload to the backend
+          />
+        </div>
       )}
     </div>
   );
