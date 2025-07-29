@@ -1,21 +1,22 @@
 import React from 'react';
 import { QuantumGate, PrebuiltAlgorithm, CustomGate } from '../types/quantum';
-import { AlertTriangle, Plus, Save, History, Cpu } from 'lucide-react';
+import { AlertTriangle, Plus, Save, History, Cpu, XCircle } from 'lucide-react'; // Import XCircle for delete icon
 
 interface SidebarProps {
   onGateSelect: (gate: QuantumGate) => void;
-  // Renamed from onAlgorithmSelect to onApplyAlgorithm to match App.tsx
   onApplyAlgorithm: (algorithmCircuit: PrebuiltAlgorithm['circuit']) => void; 
   onCustomGateSelect: (customGate: CustomGate) => void;
+  onDeleteCustomGate: (gateId: string) => void; // New prop for deleting custom gates
   customGates: CustomGate[];
   className?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   onGateSelect, 
-  onApplyAlgorithm, // Use the correct prop name
+  onApplyAlgorithm, 
   onCustomGateSelect,
-  customGates, // This prop already contains the custom gates array
+  onDeleteCustomGate, // Destructure the new prop
+  customGates, 
   className = '' 
 }) => {
   const [activeTab, setActiveTab] = React.useState<'gates' | 'algorithms' | 'custom'>('gates');
@@ -182,8 +183,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   ];
 
-  // Removed the redundant declaration: const customGates = getCustomGates();
-
   const handleGateClick = (gateName: string) => {
     const gate: QuantumGate = {
       id: Date.now().toString(), // Temporary ID, will be replaced by uuidv4 in useCircuit
@@ -345,17 +344,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
               ) : (
                 <div className="space-y-2">
                   {customGates.map((customGate) => (
-                    <button
-                      key={customGate.id}
-                      onClick={() => onCustomGateSelect(customGate)}
-                      className="w-full p-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-xs hover:opacity-90 transition-opacity shadow-sm hover:shadow-md text-left"
+                    <div 
+                      key={customGate.id} 
+                      className="relative w-full p-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-xs hover:opacity-90 transition-opacity shadow-sm hover:shadow-md text-left flex items-center justify-between"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{customGate.initial}</span>
-                        <span className="text-xs opacity-80">{customGate.gates.length} gates</span>
-                      </div>
-                      <div className="text-xs opacity-80 mt-1">{customGate.description}</div>
-                    </button>
+                      <button
+                        onClick={() => onCustomGateSelect(customGate)}
+                        className="flex-1 text-left" // Make button take available space
+                      >
+                        <div className="font-medium">{customGate.initial}</div>
+                        <div className="text-xs opacity-80 mt-1">{customGate.description}</div>
+                      </button>
+                      <button
+                        onClick={() => onDeleteCustomGate(customGate.id)} // Call delete handler
+                        className="ml-2 p-1 rounded-full bg-red-600 hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                        title="Delete Custom Gate"
+                      >
+                        <XCircle className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}

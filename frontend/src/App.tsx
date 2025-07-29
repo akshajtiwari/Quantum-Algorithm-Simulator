@@ -66,7 +66,8 @@ function App() {
     clearSelection,
     createCustomGate,
     getCustomGates,
-    updateGate // Import updateGate from useCircuit
+    deleteCustomGate, // Import the new deleteCustomGate function
+    updateGate 
   } = useCircuit();
   const [selectedBackend, setSelectedBackend] = useState<Backend>('local');
   const [showCodeView, setShowCodeView] = useState(false);
@@ -336,6 +337,12 @@ const handleSimulate = async () => {
     setShowCustomGateCreator(false); // Close the modal
   };
 
+  // New handler for deleting a custom gate
+  const handleDeleteCustomGate = (gateId: string) => {
+    deleteCustomGate(gateId);
+    setCustomGates(getCustomGates()); // Refresh the list of custom gates
+  };
+
   const handleGateAddedToCanvas = (gate: QuantumGate) => {
     addGate(gate);
     // If it's a rotation gate, show the angle input modal
@@ -404,6 +411,7 @@ const handleSimulate = async () => {
                 onGateSelect={handleGateAddedToCanvas} 
                 onApplyAlgorithm={handleAlgorithmSelect} 
                 onCustomGateSelect={handleCustomGateSelect}
+                onDeleteCustomGate={handleDeleteCustomGate} // Pass the new delete handler
                 customGates={customGates}
                 className="h-full"
               />

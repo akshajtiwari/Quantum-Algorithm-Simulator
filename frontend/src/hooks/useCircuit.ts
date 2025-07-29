@@ -181,6 +181,13 @@ export const useCircuit = () => {
     }));
   }, []);
 
+  // NEW: deleteCustomGate function
+  const deleteCustomGate = useCallback((gateId: string) => {
+    const existingCustomGates: CustomGate[] = JSON.parse(localStorage.getItem('quantum-custom-gates') || '[]');
+    const updatedCustomGates = existingCustomGates.filter(gate => gate.id !== gateId);
+    localStorage.setItem('quantum-custom-gates', JSON.stringify(updatedCustomGates));
+  }, []);
+
 
   return {
     circuit,
@@ -200,6 +207,7 @@ export const useCircuit = () => {
     clearSelection,
     createCustomGate,
     getCustomGates,
-    updateGate // IMPORTANT: Make sure updateGate is returned here
+    updateGate, 
+    deleteCustomGate // IMPORTANT: Make sure deleteCustomGate is returned here
   };
 };
