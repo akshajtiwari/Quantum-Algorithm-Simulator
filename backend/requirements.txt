@@ -1,0 +1,23 @@
+
+# requirements.txt
+# This file lists the Python packages required to run the backend of the quantum circuit simulator.
+# You can install these dependencies using pip:
+# pip install -r requirements.txt
+
+# Flask and utilities for the web server
+Flask==2.3.3
+Flask-Cors==4.0.0
+python-dotenv==1.0.0
+
+# Quantum computing SDKs and their dependencies
+qiskit==0.45.0
+qiskit-aer==0.13.0
+qiskit-ibm-runtime==0.17.0
+amazon-braket-sdk==1.65.0 # For IonQ and Rigetti via AWS Braket
+azure-quantum~=0.28.0 # For Quantinuum via Azure Quantum
+cirq==1.2.0
+pennylane==0.35.1
+pennylane-lightning==0.35.1 # Required for the 'lightning.qubit' device in PennyLane
+
+# General utilities
+numpy==1.26.4 # Often a dependency of quantum SDKs, good to explicitly include
